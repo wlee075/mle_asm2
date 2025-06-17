@@ -26,6 +26,11 @@ with DAG(
         # data_ml_container is defined in the docker-compose.yml file
         bash_command="docker exec data_ml_container_asm2 python run_gold_data_pipeline.py",
     )
+    run_baseline_features_for_psi_pipeline = BashOperator(
+        task_id="run_baseline_features_for_psi_pipeline",
+        # data_ml_container is defined in the docker-compose.yml file
+        bash_command="docker exec data_ml_container_asm2 python run_baseline_features_for_psi_pipeline.py",
+    )
 
     # run_online_feature_data_pipeline = BashOperator(
     #     task_id="run_online_feature_data_pipeline",
@@ -42,6 +47,7 @@ with DAG(
         run_bronze_data_pipeline
         >> run_silver_data_pipeline
         >> run_gold_data_pipeline
+        >> run_baseline_features_for_psi_pipeline
         # >> run_online_feature_data_pipeline
         # >> run_ml_training_pipeline
     )
