@@ -1,0 +1,6 @@
+artifact_location: file:///app/mlruns/582441470558872960
+creation_time: 1750147150394
+experiment_id: '582441470558872960'
+last_update_time: 1750147150394
+lifecycle_stage: active
+name: fraud-inference

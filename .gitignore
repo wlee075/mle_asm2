@@ -1,0 +1,127 @@
+# ================================================
+# Python & PySpark Basics
+# ================================================
+# Ignore Python compiled files and caches
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Environment variables
+.env
+.env.local
+
+# ================================================
+# IDEs and Editors
+# ================================================
+# PyCharm
+.idea/
+*.iml
+
+# VSCode
+.vscode/
+*.code-workspace
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# macOS
+.DS_Store
+
+# ================================================
+# PySpark Specific
+# ================================================
+# Spark warehouse and metastore
+spark-warehouse/
+metastore_db/
+derby.log
+
+# Spark logs
+logs/
+*.log
+
+# Temporary Spark files
+temp/
+tmp/
+
+# ================================================
+# Data Files (Added Section)
+# ================================================
+# Parquet files and directories
+*.parquet
+.parquet/
+data/*.parquet
+output/*.parquet
+data/parquet/
+output/parquet/
+
+# Spark checkpoint files
+checkpoint/
+.checkpoint/
+
+# Hadoop/Spark temporary files
+_SUCCESS
+*.crc
+_temporary/
+__hadoop*
+__spark*
+
+# ================================================
+# Packaging & Distribution
+# ================================================
+# Python packaging
+*.egg-info/
+build/
+dist/
+.eggs/
+
+# ================================================
+# Virtual Environments
+# ================================================
+venv/
+env/
+.venv/
+pip-wheel-metadata/
+poetry.lock
+poetry.toml
+
+# ================================================
+# Jupyter Notebooks
+# ================================================
+# Jupyter runtime files
+.jupyter/
+jupyter_runtime/
+
+# ================================================
+# Testing & Coverage
+# ================================================
+.coverage
+htmlcov/
+.tox/
+.nox/
+.pytest_cache/
+
+# ================================================
+# Docker
+# ================================================
+Dockerfile
+docker-compose.yml
+.dockerignore
+docker-build/
+docker-run/
+
+# ================================================
+# Temporary Files
+# ================================================
+# Editor temp files
+*.swp
+*.swo
+.~*
+
+# ================================================
+# Personal Configs
+# ================================================
+# Custom environment files
+.env.*
+.flaskenv
+.python-version

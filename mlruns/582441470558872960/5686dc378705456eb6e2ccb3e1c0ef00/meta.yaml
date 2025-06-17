@@ -1,0 +1,14 @@
+artifact_uri: file:///app/mlruns/582441470558872960/5686dc378705456eb6e2ccb3e1c0ef00/artifacts
+end_time: 1750148060671
+entry_point_name: ''
+experiment_id: '582441470558872960'
+lifecycle_stage: active
+run_id: 5686dc378705456eb6e2ccb3e1c0ef00
+run_name: infer_credit_model_2024_09_01.pkl_2024-07-01
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1750148048061
+status: 3
+tags: []
+user_id: root

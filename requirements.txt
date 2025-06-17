@@ -1,0 +1,15 @@
+pyspark
+pandas
+matplotlib
+seaborn
+notebook
+jupyterlab
+pyarrow
+ijson
+scikit-learn
+numpy
+pyyaml
+mlflow
+xgboost
+optuna
+imblearn
