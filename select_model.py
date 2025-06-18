@@ -13,12 +13,8 @@ def main(cand_dir: str, prod_dir: str, start: str, end: str, past_n: int = 3):
     if exp is None:
         logging.error("Experiment 'model-training-full' not found.")
         return
-
-    # fetch all runs once
     all_runs = client.search_runs([exp.experiment_id], filter_string="", max_results=50000)
     logging.info(f"Fetched {len(all_runs)} runs.")
-
-    # group best AUC per snapshot
     best_per_snap = {}
     for run in all_runs:
         snap = run.data.tags.get("snapshot_date")
@@ -31,7 +27,6 @@ def main(cand_dir: str, prod_dir: str, start: str, end: str, past_n: int = 3):
 
     os.makedirs(prod_dir, exist_ok=True)
     for snap, (run, auc) in best_per_snap.items():
-        # retrieve model type, fall back to logged parameter if tag missing
         mtype = run.data.tags.get("model_type") or run.data.params.get("model_type")
         src = os.path.join(cand_dir, f"{mtype}_{snap}.pkl")
         if os.path.exists(src):
@@ -41,11 +36,9 @@ def main(cand_dir: str, prod_dir: str, start: str, end: str, past_n: int = 3):
         else:
             snap_dt = datetime.strptime(snap, "%Y-%m-%d")
             cutoff  = snap_dt - relativedelta(years=past_n)
-            # collect all snapshot keys between cutoff and current snapshot
             candidates = []
             cutoff_str = cutoff.strftime("%Y-%m-%d")
             for date_str in best_per_snap.keys():
-                # include any date >= cutoff and before the target snapshot
                 if cutoff_str <= date_str < snap:
                     candidates.append(date_str)
                 if not candidates:
