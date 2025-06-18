@@ -11,7 +11,7 @@ import pyspark
 import pyspark.sql.functions as F
 import argparse
 
-from pyspark.sql.functions import col
+from pyspark.sql.functions import col, try_divide, ceil
 from pyspark.sql.types import StringType, IntegerType, FloatType, DateType
 
 
@@ -48,7 +48,7 @@ def process_silver_table(snapshot_date_str, bronze_lms_directory, silver_loan_da
     df = df.withColumn("mob", col("installment_num").cast(IntegerType()))
 
     # augment data: add days past due
-    df = df.withColumn("installments_missed", F.ceil(col("overdue_amt") / col("due_amt")).cast(IntegerType())).fillna(0)
+    df = df.withColumn("installments_missed", ceil( try_divide(col("overdue_amt"), col("due_amt"))).cast(IntegerType())).fillna(0)
     df = df.withColumn("first_missed_date", F.when(col("installments_missed") > 0, F.add_months(col("snapshot_date"), -1 * col("installments_missed"))).cast(DateType()))
     df = df.withColumn("dpd", F.when(col("overdue_amt") > 0.0, F.datediff(col("snapshot_date"), col("first_missed_date"))).otherwise(0).cast(IntegerType()))
 
