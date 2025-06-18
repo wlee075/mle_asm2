@@ -1,6 +1,6 @@
 from airflow import DAG
 from airflow.operators.bash import BashOperator
-from airflow.operators.dummy import DummyOperator
+from airflow.operators.empty import EmptyOperator
 from datetime import datetime, timedelta
 
 default_args = {
@@ -24,7 +24,7 @@ with DAG(
 
     # --- label store ---
 
-    dep_check_source_label_data = DummyOperator(task_id="dep_check_source_label_data")
+    dep_check_source_label_data = EmptyOperator(task_id="dep_check_source_label_data")
 
     bronze_label_store = BashOperator(
         task_id='run_bronze_label_store',
@@ -35,36 +35,36 @@ with DAG(
         ),
     )
 
-    silver_label_store = DummyOperator(task_id="silver_label_store")
+    silver_label_store = EmptyOperator(task_id="silver_label_store")
 
-    gold_label_store = DummyOperator(task_id="gold_label_store")
+    gold_label_store = EmptyOperator(task_id="gold_label_store")
 
-    label_store_completed = DummyOperator(task_id="label_store_completed")
+    label_store_completed = EmptyOperator(task_id="label_store_completed")
 
     # Define task dependencies to run scripts sequentially
     dep_check_source_label_data >> bronze_label_store >> silver_label_store >> gold_label_store >> label_store_completed
  
  
     # --- feature store ---
-    dep_check_source_data_bronze_1 = DummyOperator(task_id="dep_check_source_data_bronze_1")
+    dep_check_source_data_bronze_1 = EmptyOperator(task_id="dep_check_source_data_bronze_1")
 
-    dep_check_source_data_bronze_2 = DummyOperator(task_id="dep_check_source_data_bronze_2")
+    dep_check_source_data_bronze_2 = EmptyOperator(task_id="dep_check_source_data_bronze_2")
 
-    dep_check_source_data_bronze_3 = DummyOperator(task_id="dep_check_source_data_bronze_3")
+    dep_check_source_data_bronze_3 = EmptyOperator(task_id="dep_check_source_data_bronze_3")
 
-    bronze_table_1 = DummyOperator(task_id="bronze_table_1")
+    bronze_table_1 = EmptyOperator(task_id="bronze_table_1")
     
-    bronze_table_2 = DummyOperator(task_id="bronze_table_2")
+    bronze_table_2 = EmptyOperator(task_id="bronze_table_2")
 
-    bronze_table_3 = DummyOperator(task_id="bronze_table_3")
+    bronze_table_3 = EmptyOperator(task_id="bronze_table_3")
 
-    silver_table_1 = DummyOperator(task_id="silver_table_1")
+    silver_table_1 = EmptyOperator(task_id="silver_table_1")
 
-    silver_table_2 = DummyOperator(task_id="silver_table_2")
+    silver_table_2 = EmptyOperator(task_id="silver_table_2")
 
-    gold_feature_store = DummyOperator(task_id="gold_feature_store")
+    gold_feature_store = EmptyOperator(task_id="gold_feature_store")
 
-    feature_store_completed = DummyOperator(task_id="feature_store_completed")
+    feature_store_completed = EmptyOperator(task_id="feature_store_completed")
     
     # Define task dependencies to run scripts sequentially
     dep_check_source_data_bronze_1 >> bronze_table_1 >> silver_table_1 >> gold_feature_store
@@ -74,13 +74,13 @@ with DAG(
 
 
     # --- model inference ---
-    model_inference_start = DummyOperator(task_id="model_inference_start")
+    model_inference_start = EmptyOperator(task_id="model_inference_start")
 
-    model_1_inference = DummyOperator(task_id="model_1_inference")
+    model_1_inference = EmptyOperator(task_id="model_1_inference")
 
-    model_2_inference = DummyOperator(task_id="model_2_inference")
+    model_2_inference = EmptyOperator(task_id="model_2_inference")
 
-    model_inference_completed = DummyOperator(task_id="model_inference_completed")
+    model_inference_completed = EmptyOperator(task_id="model_inference_completed")
     
     # Define task dependencies to run scripts sequentially
     feature_store_completed >> model_inference_start
@@ -89,13 +89,13 @@ with DAG(
 
 
     # --- model monitoring ---
-    model_monitor_start = DummyOperator(task_id="model_monitor_start")
+    model_monitor_start = EmptyOperator(task_id="model_monitor_start")
 
-    model_1_monitor = DummyOperator(task_id="model_1_monitor")
+    model_1_monitor = EmptyOperator(task_id="model_1_monitor")
 
-    model_2_monitor = DummyOperator(task_id="model_2_monitor")
+    model_2_monitor = EmptyOperator(task_id="model_2_monitor")
 
-    model_monitor_completed = DummyOperator(task_id="model_monitor_completed")
+    model_monitor_completed = EmptyOperator(task_id="model_monitor_completed")
     
     # Define task dependencies to run scripts sequentially
     model_inference_completed >> model_monitor_start
@@ -105,13 +105,13 @@ with DAG(
 
     # --- model auto training ---
 
-    model_automl_start = DummyOperator(task_id="model_automl_start")
+    model_automl_start = EmptyOperator(task_id="model_automl_start")
     
-    model_1_automl = DummyOperator(task_id="model_1_automl")
+    model_1_automl = EmptyOperator(task_id="model_1_automl")
 
-    model_2_automl = DummyOperator(task_id="model_2_automl")
+    model_2_automl = EmptyOperator(task_id="model_2_automl")
 
-    model_automl_completed = DummyOperator(task_id="model_automl_completed")
+    model_automl_completed = EmptyOperator(task_id="model_automl_completed")
     
     # Define task dependencies to run scripts sequentially
     feature_store_completed >> model_automl_start
