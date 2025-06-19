@@ -14,6 +14,7 @@ FEATURES  = "data/feature_clickstream.csv"
 CAND_DIR  = "model_bank/"
 PROD_DIR  = "model_bank/production/"
 LABEL_DIR = "datamart/gold/label_store/"
+REPORT_DIR = "reports/"  
 
 def infer_pipeline(snapshot: str) -> str:
     cmd = [
@@ -31,12 +32,13 @@ def infer_pipeline(snapshot: str) -> str:
 
 
 def drift_decision(**context):
+    """BranchPythonOperator callable – decides which path to follow."""
     payload_raw = context["ti"].xcom_pull(task_ids="run_infer_monitor")
     try:
         payload = json.loads(payload_raw or "{}")
-        psi_max = payload.get("psi_max", 1.0)  # default high → force retrain when missing
+        psi_max = payload.get("psi_max", 1.0)
     except Exception:
-        logging.error("Could not parse inference payload; forcing retrain")
+        logging.error("Could not parse inference payload – forcing retrain")
         return "trigger_retrain"
 
     snapshot = context["ds"]
@@ -55,6 +57,7 @@ with DAG(
     tags=["ml", "training", "inference"],
     description="ETL + Training + Inference with automatic drift retrain",
 ) as dag:
+
     run_bronze = BashOperator(
         task_id="run_bronze_data_pipeline",
         bash_command=f"docker exec {CONTAINER} python run_bronze_data_pipeline.py",
@@ -119,17 +122,42 @@ with DAG(
         python_callable=_noop,
     )
 
+    export_metrics = BashOperator(
+        task_id="export_metrics",
+        bash_command=(
+            f"docker exec {CONTAINER} python export_run_metrics.py "
+            f"--outdir {REPORT_DIR}{{{{ ds }}}}"                 # ← changed
+        ),
+    )
+
+    build_report = BashOperator(
+        task_id="build_report",
+        bash_command=(
+            f"docker exec {CONTAINER} python generate_performance_report.py "
+            f"--metrics {REPORT_DIR}{{{{ ds }}}}/metrics.parquet "
+            f"--outdir  {REPORT_DIR}{{{{ ds }}}}"
+        ),
+    )
+    
+    alert_drift = BashOperator(
+        task_id="alert_drift",
+        bash_command=(
+            f"docker exec -e AIRFLOW_API=http://airflow-apiserver:8080/api/v1/dags "
+            f"{CONTAINER} python alert_drift.py --retrain-dag run_data_and_ml_pipeline"
+        ),
+    )
+
     trigger_retrain = TriggerDagRunOperator(
         task_id="trigger_retrain",
-        trigger_dag_id="run_data_and_ml_pipeline",   # or a dedicated retrain DAG
+        trigger_dag_id="run_data_and_ml_pipeline",
         conf={"snapshot": "{{ ds }}"},
         trigger_rule=TriggerRule.NONE_FAILED_MIN_ONE_SUCCESS,
     )
 
-    # ───────────────────────── Dependencies ─────────────────────────
     run_bronze >> run_silver >> run_gold >> extract_base \
         >> [train_lr, train_xgb] >> select_best \
         >> run_infer_monitor >> drift_branch
 
-    drift_branch >> continue_pipeline
+    drift_branch >> continue_pipeline >> export_metrics >> build_report >> alert_drift
+
     drift_branch >> trigger_retrain
