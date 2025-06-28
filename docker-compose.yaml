@@ -250,11 +250,11 @@ services:
     image: ghcr.io/mlflow/mlflow:latest
     container_name: mlflow-server-asm2
     ports:
-      - "5000:5000"
+      - "5001:5001"
     volumes:
       - .:/app
       - ./mlruns:/mlruns
-    command: "mlflow server --host 0.0.0.0 --port 5000 --default-artifact-root file:/mlruns"
+    command: "mlflow server --host 0.0.0.0 --port 5001 --default-artifact-root file:/mlruns"
 
 volumes:
   postgres-db-volume:
